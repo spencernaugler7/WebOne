@@ -43,11 +43,6 @@ public partial class Program
         var app = builder.Build();
         app.MapStaticAssets();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.MapOpenApi();
-        }
-
         app.MapGet("/", (context) =>
         {
             context.Response.Redirect("/html");
