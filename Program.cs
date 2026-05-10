@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 
+namespace WebOne;
+
 public partial class Program
 {
     private static void Main(string[] args)
