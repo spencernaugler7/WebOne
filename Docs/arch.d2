@@ -1,0 +1,17 @@
+shape: sequence_diagram
+
+f: frontend {
+  shape: circle
+}
+
+b: backend
+
+d: database
+
+list contacts: {
+  f -> b: GET '/'
+  b -> f: redirect '/contacts'
+  b -> d: fetch contacts
+  d -> d: respond with contacts
+  b -> b: render contact page
+}
