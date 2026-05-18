@@ -3,7 +3,7 @@
 
 ## Todo
 
-- Fetch templates from Static class instead of injected service that is setup now.
+- [X] Fetch templates from Static class instead of injected service that is setup now.
 - Set postgres database for contacts.
 - [X] Figure out how to clean up dependancy injection (how do I cleanly inject services from multiple files)
 
