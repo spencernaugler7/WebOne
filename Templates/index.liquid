@@ -1,9 +1,0 @@
-{% capture Body %}
-  <ul>
-    {% for contact in Contacts %}
-      <li>{{- contact -}}</li>
-    {% endfor %}
-  </ul>
-{% endcapture %}
-{% render 'layout'
-  , Body: Body %}

@@ -1,0 +1,16 @@
+{% capture Body %}
+<ul>
+    {% for contact in Contacts %}
+        <li id="{{ contact.Name }}"> {{ contact.Name | append: " - " | append: contact.Email  }}</li>
+    {% endfor %}
+</ul>
+<button
+    id="reset"
+    hx-target="#index"
+    hx-trigger="click"
+    hx-get="/html">
+    Reset
+</button>
+{% endcapture %}
+{% render 'layout'
+  , Body: Body %}
