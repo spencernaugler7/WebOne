@@ -625,4 +625,7 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+# ignore d2 output
+**/Docs/*.svg
+
 # End of https://www.toptal.com/developers/gitignore/api/node
