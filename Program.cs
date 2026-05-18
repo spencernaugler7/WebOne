@@ -1,8 +1,7 @@
-using System.Diagnostics;
 using Fluid;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Physical;
+using OneOf.Types;
+using WebOne.Templates;
 
 namespace WebOne;
 
@@ -11,60 +10,30 @@ public partial class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.Services
-            .AddSingleton<FluidParser>()
-            .AddSingleton<PhysicalFileProvider>((services) =>
-            {
-                var dir = Path.Combine(Directory.GetCurrentDirectory(), "Templates");
-                var provider = new PhysicalFileProvider(dir, ExclusionFilters.None);
-                provider.Watch("*.*");
-                return provider;
-            })
-            .AddSingleton<TemplateOptions>((services) =>
-            {
-                var provider = services.GetService<PhysicalFileProvider>();
-                var options = TemplateOptions.Default;
-                options.FileProvider = provider;
-                return options;
-            })
-            .AddKeyedScoped<IFluidTemplate>("index", (IServiceProvider services, object key) =>
-            {
-                var provider = services.GetService<PhysicalFileProvider>();
-                var parser = services.GetService<FluidParser>();
-
-                var fileinfo = provider.GetFileInfo("index.liquid");
-                var text = File.ReadAllText(fileinfo?.PhysicalPath ?? string.Empty);
-
-                if (!parser.TryParse(text, out IFluidTemplate template))
-                {
-                    throw new Exception("Could not parse");
-                }
-                return template;
-            });
-
+        builder.Services.AddSingleton<FluidParser>();
+        builder.Services.AddTemplateRegistry();
         var app = builder.Build();
+
         app.MapStaticAssets();
 
         app.MapGet("/", (context) =>
         {
-            context.Response.Redirect("/html");
+            context.Response.Redirect("/contacts");
             return Task.CompletedTask;
         });
 
-        app.MapGet("/html", async ([FromQuery(Name = "q")] string? query, [FromKeyedServices("index")] IFluidTemplate template, TemplateOptions options) =>
+        app.MapGet("/contacts", ([FromQuery(Name = "q")] string? query, [FromServices] TemplateRegistry registry) =>
         {
-            List<string> contacts = [];
+            List<Contact> contacts = [];
             if (query is null)
-                contacts = FakeDb.Contacts;
+                contacts = [.. FakeDb.Contacts];
             else
                 contacts = FakeDb.Contacts
-                    .Where(contact => contact.ToUpper().Trim().Contains(query.ToString().ToUpper().Trim()))
+                    .Where(contact => contact.Name.ToUpper().Trim().Contains(query.ToString().ToUpper().Trim()))
                     .ToList();
 
-            var context = new TemplateContext(new { Contacts = contacts }, options);
-            var final = await template.RenderAsync(context);
-
-            return Results.Content(final, "text/html");
+            var html = registry.RenderTemplateAsync("contacts.liquid", new { Contacts = contacts });
+            return Results.Content(html, "text/html");
         });
 
         app.Run();
@@ -73,5 +42,14 @@ public partial class Program
 
 public static class FakeDb
 {
-    public static List<string> Contacts { get; set; } = ["Ben", "James"];
+    public static List<Contact> Contacts { get; set; } = [
+        new(){ Name = "Ben", Email = "test@gmail.com" },
+        new(){ Name = "James", Email = "test2@gmail.com"}
+    ];
+}
+
+public class Contact
+{
+    public required string Name { get; set; }
+    public required string Email { get; set; }
 }
