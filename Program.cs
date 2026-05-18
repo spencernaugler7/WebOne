@@ -1,6 +1,7 @@
+using DotNetEnv;
 using Fluid;
 using Microsoft.AspNetCore.Mvc;
-using OneOf.Types;
+using WebOne.Models;
 using WebOne.Templates;
 
 namespace WebOne;
@@ -9,7 +10,10 @@ public partial class Program
 {
     private static void Main(string[] args)
     {
+        Env.Load();
+
         var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddDbContext<Context>();
         builder.Services.AddSingleton<FluidParser>();
         builder.Services.AddTemplateRegistry();
         var app = builder.Build();
@@ -22,15 +26,19 @@ public partial class Program
             return Task.CompletedTask;
         });
 
-        app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query, [FromServices] TemplateRegistry registry) =>
+        app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query, [FromServices] TemplateRegistry registry, [FromServices] Context context) =>
         {
             List<Contact> contacts = [];
-            if (query is null)
-                contacts = [.. FakeDb.Contacts];
+            if (string.IsNullOrEmpty(query))
+            {
+                contacts = context.Contacts.ToList();
+            }
             else
-                contacts = FakeDb.Contacts
-                    .Where(contact => contact.Name.ToUpper().Trim().Contains(query.ToString().ToUpper().Trim()))
+            {
+                contacts = context.Contacts
+                    .Where(c => !string.IsNullOrEmpty(c.Name) && query.Trim().Contains(c.Name.ToUpper().Trim(), StringComparison.CurrentCultureIgnoreCase))
                     .ToList();
+            }
 
             var html = await registry.RenderTemplateAsync("contacts.liquid", new { Contacts = contacts });
             return Results.Content(html, "text/html");
@@ -38,18 +46,4 @@ public partial class Program
 
         app.Run();
     }
-}
-
-public static class FakeDb
-{
-    public static List<Contact> Contacts { get; set; } = [
-        new(){ Name = "Ben", Email = "test@gmail.com" },
-        new(){ Name = "James", Email = "test2@gmail.com"}
-    ];
-}
-
-public class Contact
-{
-    public required string Name { get; set; }
-    public required string Email { get; set; }
 }
