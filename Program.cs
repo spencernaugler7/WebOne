@@ -22,7 +22,7 @@ public partial class Program
             return Task.CompletedTask;
         });
 
-        app.MapGet("/contacts", ([FromQuery(Name = "q")] string? query, [FromServices] TemplateRegistry registry) =>
+        app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query, [FromServices] TemplateRegistry registry) =>
         {
             List<Contact> contacts = [];
             if (query is null)
@@ -32,7 +32,7 @@ public partial class Program
                     .Where(contact => contact.Name.ToUpper().Trim().Contains(query.ToString().ToUpper().Trim()))
                     .ToList();
 
-            var html = registry.RenderTemplateAsync("contacts.liquid", new { Contacts = contacts });
+            var html = await registry.RenderTemplateAsync("contacts.liquid", new { Contacts = contacts });
             return Results.Content(html, "text/html");
         });
 

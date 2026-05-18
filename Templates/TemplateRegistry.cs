@@ -40,7 +40,7 @@ public static class TemplateRegistryExtensions
 
 public class TemplateRegistry(FluidParser Parser, IFileProvider Provider, TemplateOptions DefaultTemplateOptions)
 {
-    public string RenderTemplateAsync(string templateName, object model)
+    public async ValueTask<string> RenderTemplateAsync(string templateName, object model)
     {
         var fileinfo = Provider.GetFileInfo(templateName);
 
@@ -53,7 +53,7 @@ public class TemplateRegistry(FluidParser Parser, IFileProvider Provider, Templa
             .IfFalse();
 
         var context = new TemplateContext(model, DefaultTemplateOptions);
-        var result = template.Render(context);
+        var result = await template.RenderAsync(context);
 
         return result;
     }
