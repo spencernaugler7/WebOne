@@ -3,11 +3,9 @@ using Throw;
 
 namespace WebOne.Models;
 
-public class Context: DbContext
+public class Context(DbContextOptions<Context> options) : DbContext(options)
 {
-    public DbSet<Contact> Contacts { get; set; }
-
-    public Context(DbContextOptions<Context> options): base(options) { }
+    public virtual DbSet<Contact> Contacts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
