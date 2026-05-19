@@ -1,7 +1,7 @@
 {% capture Body %}
 <ul>
     {% for contact in Contacts %}
-        <li id="{{ contact.Name }}"> {{ contact.Name | append: " - " | append: contact.Email  }}</li>
+        <li id="{{ contact.Id }}">{{ contact.Name | append: " - " | append: contact.Email }}</li>
     {% endfor %}
 </ul>
 <button
