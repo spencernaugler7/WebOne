@@ -3,7 +3,7 @@ using Throw;
 
 namespace WebOne.Models;
 
-public class Context(DbContextOptions<Context> options) : DbContext(options)
+public class WebOneDbContext(DbContextOptions<WebOneDbContext> options) : DbContext(options)
 {
     public virtual DbSet<Contact> Contacts { get; set; }
 

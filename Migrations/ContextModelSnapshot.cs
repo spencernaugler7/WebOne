@@ -9,7 +9,7 @@ using WebOne.Models;
 
 namespace WebOne.Migrations
 {
-    [DbContext(typeof(Context))]
+    [DbContext(typeof(WebOneDbContext))]
     partial class ContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

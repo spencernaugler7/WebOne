@@ -10,7 +10,7 @@ using WebOne.Models;
 
 namespace WebOne.Migrations
 {
-    [DbContext(typeof(Context))]
+    [DbContext(typeof(WebOneDbContext))]
     [Migration("20260518155554_InitialCreate")]
     partial class InitialCreate
     {
