@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using System.Net.Mime;
 using DotNetEnv;
 using Fluid;
@@ -79,6 +80,20 @@ public partial class Program
             return Results.Content(html, "text/html");
         });
 
+        app.MapGet("/stream", async () =>
+        {          
+            return Results.ServerSentEvents(GetMessages(500)); 
+        });
+
         app.Run();
+    }
+
+    private static async IAsyncEnumerable<int> GetMessages(int max)
+    {
+        for (var i = 1; i <= max; i++)
+        {
+            await Task.Delay(1000);
+            yield return i;
+        }
     }
 }

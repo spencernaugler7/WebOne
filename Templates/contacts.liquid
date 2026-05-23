@@ -1,5 +1,9 @@
 {% capture Body %}
 
+<div hx-sse:connect="/stream">
+    Waiting for messages...
+</div>
+
 <div id="workingContainer" class="container-fluid overflow-auto" data-theme="dark">
     <table>
         <tbody>
@@ -11,7 +15,9 @@
                     hx-target="#workingContainer"
                     hx-swap="innerHTML">
 
-                    <th><img src="/images/user.svg" width="50" height="50"></th>
+                    <th>
+                        <img src="/images/user.svg" width="50" height="50">
+                    </th>
                     <th>
                         <div id="contactDescription" class="contact-description">
                             {{ contact.Name | append: " - " | append: contact.Email }}
