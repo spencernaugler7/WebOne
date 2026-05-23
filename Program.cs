@@ -1,5 +1,7 @@
+using System.Net.Mime;
 using DotNetEnv;
 using Fluid;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Throw;
 using WebOne.Models;
@@ -21,6 +23,28 @@ public partial class Program
         var app = builder.Build();
         
         app.MapStaticAssets();
+
+        app.UseExceptionHandler(exceptionHandler =>
+        {
+            var registry = exceptionHandler.ApplicationServices.GetService<TemplateRegistry>();
+
+            registry.ThrowIfNull("Registry cannot be null");
+
+            exceptionHandler.Run(async httpContext =>
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                httpContext.Response.ContentType = "text/html";
+                var exceptionHandlerPathFeature =
+                    httpContext.Features.Get<IExceptionHandlerPathFeature>();
+
+                var model = new { 
+                    exceptionHandlerPathFeature?.Endpoint, 
+                    Message = exceptionHandlerPathFeature?.Error 
+                };
+                var html = await registry.RenderTemplateAsync("exception.liquid", model);
+                await httpContext.Response.WriteAsync(html);
+            });
+        });
 
         app.MapGet("/", (context) =>
         {
@@ -47,8 +71,8 @@ public partial class Program
 
         app.MapGet("/contact/{id}", async (int id, TemplateRegistry registry, WebOneDbContext context) =>
         {
-            var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
-
+            // var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
+            Contact? contact = null;
             contact.ThrowIfNull("Contact was in list but entry doesn't exist.");
 
             var html = await registry.RenderTemplateAsync("contact.liquid", new { Contact = contact });
