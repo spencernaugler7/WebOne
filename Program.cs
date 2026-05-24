@@ -20,9 +20,9 @@ public partial class Program
         builder.Services.AddDbContext<WebOneDbContext>();
         builder.Services.AddSingleton<FluidParser>();
         builder.Services.AddTemplateRegistry();
-        
+
         var app = builder.Build();
-        
+
         app.MapStaticAssets();
 
         app.UseExceptionHandler(exceptionHandler =>
@@ -38,9 +38,10 @@ public partial class Program
                 var exceptionHandlerPathFeature =
                     httpContext.Features.Get<IExceptionHandlerPathFeature>();
 
-                var model = new { 
-                    exceptionHandlerPathFeature?.Endpoint, 
-                    Message = exceptionHandlerPathFeature?.Error 
+                var model = new
+                {
+                    exceptionHandlerPathFeature?.Endpoint,
+                    Message = exceptionHandlerPathFeature?.Error
                 };
                 var html = await registry.RenderTemplateAsync("exception.liquid", model);
                 await httpContext.Response.WriteAsync(html);
@@ -81,8 +82,8 @@ public partial class Program
         });
 
         app.MapGet("/stream", async () =>
-        {          
-            return Results.ServerSentEvents(GetMessages(500)); 
+        {
+            return Results.ServerSentEvents(GetMessages(500));
         });
 
         app.Run();
