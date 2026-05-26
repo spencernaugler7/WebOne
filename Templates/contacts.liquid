@@ -1,6 +1,6 @@
 {% capture Body %}
 
-<div hx-sse:connect="/stream">
+<div>
     Waiting for messages...
 </div>
 
@@ -8,13 +8,8 @@
     <table>
         <tbody>
             {% for contact in Contacts %}
-                <tr id="{{ contact.Id }}" 
-                    class="container" 
-                    hx-get="/contact/{{ contact.Id }}"
-                    hx-on="click"
-                    hx-target="#workingContainer"
-                    hx-swap="innerHTML">
-
+                <tr id="{{ contact.Id }}"
+                    data-on:click="@get('/contact/{{ contact.Id }}')")>
                     <th>
                         <img src="/images/user.svg" width="50" height="50">
                     </th>

@@ -1,9 +1,8 @@
-using System.Diagnostics.Metrics;
-using System.Net.Mime;
 using DotNetEnv;
 using Fluid;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using StarFederation.Datastar.DependencyInjection;
 using Throw;
 using WebOne.Models;
 using WebOne.Templates;
@@ -20,6 +19,7 @@ public partial class Program
         builder.Services.AddDbContext<WebOneDbContext>();
         builder.Services.AddSingleton<FluidParser>();
         builder.Services.AddTemplateRegistry();
+        builder.Services.AddDatastar();
 
         var app = builder.Build();
 
@@ -71,30 +71,17 @@ public partial class Program
             return Results.Content(html, "text/html");
         });
 
-        app.MapGet("/contact/{id}", async (int id, TemplateRegistry registry, WebOneDbContext context) =>
+        app.MapGet("/contact/{id}", async (int id, TemplateRegistry registry, WebOneDbContext context, IDatastarService dataStar) =>
         {
-            // var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
-            Contact? contact = null;
+            var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
+            // Contact? contact = null;
             contact.ThrowIfNull("Contact was in list but entry doesn't exist.");
 
             var html = await registry.RenderTemplateAsync("contact.liquid", new { Contact = contact });
-            return Results.Content(html, "text/html");
-        });
 
-        app.MapGet("/stream", async () =>
-        {
-            return Results.ServerSentEvents(GetMessages(500));
+            await dataStar.PatchElementsAsync(html);
         });
 
         app.Run();
-    }
-
-    private static async IAsyncEnumerable<int> GetMessages(int max)
-    {
-        for (var i = 1; i <= max; i++)
-        {
-            await Task.Delay(1000);
-            yield return i;
-        }
     }
 }
