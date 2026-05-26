@@ -12,6 +12,7 @@ public static class TemplateRegistryExtensions
 {
     public static IServiceCollection AddTemplateRegistry(this IServiceCollection services)
     {
+        services.AddSingleton<FluidParser>();
         services.AddSingleton<IFileProvider>((services) =>
         {
             var currentDir = Directory.GetCurrentDirectory();

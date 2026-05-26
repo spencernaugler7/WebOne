@@ -17,7 +17,6 @@ public partial class Program
 
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddDbContext<WebOneDbContext>();
-        builder.Services.AddSingleton<FluidParser>();
         builder.Services.AddTemplateRegistry();
         builder.Services.AddDatastar();
 
