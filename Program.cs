@@ -1,6 +1,6 @@
 using DotNetEnv;
-using Fluid;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using StarFederation.Datastar.DependencyInjection;
 using Throw;
@@ -17,35 +17,13 @@ public partial class Program
 
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddDbContext<WebOneDbContext>();
-        builder.Services.AddTemplateRegistry();
         builder.Services.AddDatastar();
+        builder.Services.AddTemplateRegistry();
+        builder.Services.AddExceptionHandler<WebOneExceptionHandler>();
 
         var app = builder.Build();
 
         app.MapStaticAssets();
-
-        app.UseExceptionHandler(exceptionHandler =>
-        {
-            var registry = exceptionHandler.ApplicationServices.GetService<TemplateRegistry>();
-
-            registry.ThrowIfNull("Registry cannot be null");
-
-            exceptionHandler.Run(async httpContext =>
-            {
-                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                httpContext.Response.ContentType = "text/html";
-                var exceptionHandlerPathFeature =
-                    httpContext.Features.Get<IExceptionHandlerPathFeature>();
-
-                var model = new
-                {
-                    exceptionHandlerPathFeature?.Endpoint,
-                    Message = exceptionHandlerPathFeature?.Error
-                };
-                var html = await registry.RenderTemplateAsync("exception.liquid", model);
-                await httpContext.Response.WriteAsync(html);
-            });
-        });
 
         app.MapGet("/", (context) =>
         {
@@ -82,5 +60,20 @@ public partial class Program
         });
 
         app.Run();
+    }
+
+    private class WebOneExceptionHandler(TemplateRegistry registry, IDatastarService dataStar) : IExceptionHandler
+    {
+        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+        {
+            var model = new
+            {
+                Endpoint = httpContext.Request.GetEncodedUrl(),
+                Message = exception.ToString()
+            };
+            var html = await registry.RenderTemplateAsync("exception.liquid", model);
+            await dataStar.PatchElementsAsync(html, cancellationToken);
+            return true;
+        }
     }
 }
