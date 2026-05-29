@@ -2,6 +2,7 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using OneOf.Types;
 using StarFederation.Datastar.DependencyInjection;
 using Throw;
 using WebOne.Models;
@@ -34,6 +35,14 @@ public partial class Program
 
         app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query, TemplateRegistry registry, WebOneDbContext context) =>
         {
+            if (!await context.Database.CanConnectAsync())
+            {
+                var errorMessage = "Database is not connected, Ensure database is running and reconnect.";
+                var exceptionTemplate = await registry.RenderTemplateAsync("exception.liquid", new { Message = errorMessage });
+                var homePage = await registry.RenderTemplateAsync("layout.liquid", new { Body = exceptionTemplate });
+                return Results.Content(homePage, "text/html");
+            }
+
             if (string.IsNullOrEmpty(query))
             {
                 var contactsAll = context.Contacts.ToList();
@@ -73,6 +82,7 @@ public partial class Program
 
             var model = new
             {
+                ShowHomeLink = true,
                 Endpoint = httpContext.Request.GetEncodedUrl(),
                 Message = exception.ToString()
             };
