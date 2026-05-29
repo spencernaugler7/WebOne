@@ -1,8 +1,8 @@
 <div id="workingContainer" class="container-fluid overflow-auto" data-theme="dark">
     <h1>Error</h1>
-    <h3><a href="/contacts">go home</a></h3>
+    {% if ShowHomeLink %} <h3><a href="/contacts">go home</a></h3>{% endif %}
 
-    <h2>Endpoint: {{ Endpoint }}</h2>
+    {% if Endpoint %} <h2>Endpoint: {{ Endpoint }}</h2> {% endif %}
 
     Exception Was thrown:
     <textarea>
