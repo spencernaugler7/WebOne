@@ -1,10 +1,7 @@
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Fluid;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Throw;
-using WebOne;
 
 namespace WebOne.Templates;
 
@@ -13,7 +10,7 @@ public static class TemplateRegistryExtensions
     public static IServiceCollection AddTemplateRegistry(this IServiceCollection services)
     {
         services.AddSingleton<FluidParser>();
-        services.AddSingleton<IFileProvider>((services) =>
+        services.AddSingleton<IFileProvider>(services =>
         {
             var currentDir = Directory.GetCurrentDirectory();
             var dir = Path.Combine(currentDir, "Templates");
@@ -39,7 +36,12 @@ public static class TemplateRegistryExtensions
     }
 }
 
-public class TemplateRegistry(FluidParser Parser, IFileProvider Provider, TemplateOptions DefaultTemplateOptions)
+public interface ITemplateRegistry
+{
+    public ValueTask<string> RenderTemplateAsync(string templateName, object model);
+}
+
+public class TemplateRegistry(FluidParser Parser, IFileProvider Provider, TemplateOptions DefaultTemplateOptions): ITemplateRegistry
 {
     public async ValueTask<string> RenderTemplateAsync(string templateName, object model)
     {
