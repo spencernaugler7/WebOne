@@ -15,6 +15,13 @@
     <script type="module" src="/js/datastar.min.js"></script>
   </head>
   <body>
+    <pre data-json-signals></pre>
+    <input id="testInput" data-bind:testInput type="datetime-local" value=""></button>
+    <div style="display: flex; flex-direction: row; gap: 10px">
+      <button id="testButton" data-on:click="$testinput = Temporal.Now.plainDateTimeISO().toString('YYYY-MM-DDTHH:mm')">Reset Date To Today</button>
+      <button id="testButton2" data-on:click="$testinput = null">Clear Date Input</button>
+      <button id="testButton3" data-on:click="$testinput && $testinput = (new Date(Date.now())).toISOString().slice(0,16)">Add One day to input</button>
+    </div>
     <main class="container-fluid">
       {{ Body }}
     </main>
