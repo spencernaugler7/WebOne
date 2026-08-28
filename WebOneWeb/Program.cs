@@ -31,8 +31,8 @@ public partial class Program
             return Task.CompletedTask;
         });
 
-        app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query, 
-           TemplateRegistry registry, 
+        app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query,
+           TemplateRegistry registry,
            WebOneDbContext context) =>
         {
             if (!await context.Database.CanConnectAsync())
