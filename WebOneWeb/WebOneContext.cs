@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Throw;
+using WebOneCore;
 
-namespace WebOne.Models;
+namespace WebOneWeb;
 
 public class WebOneDbContext(DbContextOptions<WebOneDbContext> options) : DbContext(options)
 {

@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WebOne.Models;
+using WebOneWeb;
 
 #nullable disable
 
-namespace WebOne.Migrations
+namespace WebOneWeb.Migrations
 {
     [DbContext(typeof(WebOneDbContext))]
     partial class ContextModelSnapshot : ModelSnapshot

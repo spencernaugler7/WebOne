@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Extensions;
 using StarFederation.Datastar.DependencyInjection;
 using Throw;
-using WebOne.Templates;
+using WebOneWeb.Templates;
 
-namespace WebOne;
+namespace WebOneWeb;
 
 public sealed class WebOneExceptionHandler(TemplateRegistry registry, IServiceProvider provider) : IExceptionHandler
 {

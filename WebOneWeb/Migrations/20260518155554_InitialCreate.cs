@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace WebOne.Migrations
+namespace WebOneWeb.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

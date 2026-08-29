@@ -3,7 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Throw;
 
-namespace WebOne.Templates;
+namespace WebOneWeb.Templates;
 
 public static class TemplateRegistryExtensions
 {

@@ -2,11 +2,10 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Mvc;
 using StarFederation.Datastar.DependencyInjection;
 using Throw;
-using WebOne.Models;
-using WebOne.Templates;
 using WebOneCore;
+using WebOneWeb.Templates;
 
-namespace WebOne;
+namespace WebOneWeb;
 
 public partial class Program
 {
