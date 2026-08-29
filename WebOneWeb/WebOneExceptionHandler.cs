@@ -6,26 +6,22 @@ using WebOne.Templates;
 
 namespace WebOne;
 
-public partial class Program
+public sealed class WebOneExceptionHandler(TemplateRegistry registry, IServiceProvider provider) : IExceptionHandler
 {
-    public sealed class WebOneExceptionHandler(TemplateRegistry registry, IServiceProvider provider) : IExceptionHandler
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken token)
     {
-        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
-        {
-            using var scope = provider.CreateScope();
-            var dataStar = scope.ServiceProvider.GetService<IDatastarService>();
-            dataStar.ThrowIfNull("Datastar service cannot be null");
+        await using var scope = provider.CreateAsyncScope();
 
-            var model = new
-            {
-                ShowHomeLink = true,
-                Endpoint = httpContext.Request.GetEncodedUrl(),
-                Message = exception.ToString()
-            };
-            var html = await registry.RenderTemplateAsync("exception.liquid", model);
-            var options = new PatchElementsOptions();
-            await dataStar.PatchElementsAsync(html, cancellationToken);
-            return true;
-        }
+        var dataStar = scope.ServiceProvider.GetService<IDatastarService>();
+        dataStar.ThrowIfNull("The DataStar service cannot be null");
+
+        var html = await registry.RenderTemplateAsync("exception.liquid", new
+        {
+            ShowHomeLink = true,
+            Endpoint = httpContext.Request.GetEncodedUrl(),
+            Message = exception.ToString()
+        });
+        await dataStar.PatchElementsAsync(html, token);
+        return true;
     }
 }

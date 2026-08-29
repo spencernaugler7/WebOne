@@ -1,6 +1,5 @@
 using DotNetEnv;
 using Microsoft.AspNetCore.Mvc;
-using OneOf.Types;
 using StarFederation.Datastar.DependencyInjection;
 using Throw;
 using WebOne.Models;
@@ -38,7 +37,7 @@ public partial class Program
         {
             if (!await context.Database.CanConnectAsync())
             {
-                var errorMessage = "Database is not connected, Ensure database is running and reconnect.";
+                const string errorMessage = "Database is not connected, Ensure database is running and reconnect.";
                 var exceptionTemplate = await registry.RenderTemplateAsync("exception.liquid", new { Message = errorMessage });
                 var homePage = await registry.RenderTemplateAsync("layout.liquid", new { Body = exceptionTemplate });
                 return Results.Content(homePage, "text/html");
@@ -59,12 +58,15 @@ public partial class Program
             return Results.Content(html, "text/html");
         });
 
-        app.MapGet("/contact/{id}", async (int id, TemplateRegistry registry, WebOneDbContext context, IDatastarService dataStar) =>
+        app.MapGet("/contact/{id:int}", async (int id, TemplateRegistry registry, WebOneDbContext context, IDatastarService dataStar) =>
         {
-            var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
-            // Contact? contact = null;
-            contact.ThrowIfNull("Contact was in list but entry doesn't exist.");
-
+            // var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
+            Contact? contact = null;
+            // contact.ThrowIfNull("Contact was in list but entry doesn't exist.");
+            if (contact is null)
+            {
+                throw new Exception("Test");
+            }
             var html = await registry.RenderTemplateAsync("contact.liquid", new { Contact = contact });
 
             await dataStar.PatchElementsAsync(html);
