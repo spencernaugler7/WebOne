@@ -5,6 +5,7 @@ using StarFederation.Datastar.DependencyInjection;
 using Throw;
 using WebOne.Models;
 using WebOne.Templates;
+using WebOneCore;
 
 namespace WebOne;
 

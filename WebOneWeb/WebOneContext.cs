@@ -28,10 +28,3 @@ public class WebOneDbContext(DbContextOptions<WebOneDbContext> options) : DbCont
         base.OnModelCreating(modelBuilder);
     }
 }
-
-public class Contact
-{
-    public long Id { get; set; }
-    public string? Name { get; set; }
-    public string? Email { get; set; }
-}

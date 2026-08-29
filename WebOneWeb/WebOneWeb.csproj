@@ -20,4 +20,8 @@
     <PackageReference Include="Throw" Version="1.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WebOneCore\WebOneCore.csproj" />
+  </ItemGroup>
+
 </Project>

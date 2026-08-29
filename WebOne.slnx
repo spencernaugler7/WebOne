@@ -1,3 +1,4 @@
 <Solution>
-  <Project Path="WebOneWeb/WebOneWeb.csproj" />
+  <Project Path="WebOneWeb/WebOneWeb.csproj"/>
+  <Project Path="WebOneCore/WebOneCore.csproj"/>
 </Solution>
