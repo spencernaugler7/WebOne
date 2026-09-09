@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using DotNetEnv;
 using Microsoft.AspNetCore.Mvc;
 using StarFederation.Datastar.DependencyInjection;
@@ -9,6 +10,8 @@ namespace WebOneWeb;
 
 public partial class Program
 {
+    private Channel<string> events = Channel.CreateUnbounded<string>();
+    
     private static void Main(string[] args)
     {
         Env.Load();
@@ -24,10 +27,18 @@ public partial class Program
 
         app.MapStaticAssets();
         app.UseExceptionHandler();
-        app.MapGet("/", (context) =>
+        app.MapGet("/", async (HttpContext context, TemplateRegistry registry, 
+                               WebOneDbContext dbContext, IDatastarService dataStar) =>
         {
-            context.Response.Redirect("/contacts");
-            return Task.CompletedTask;
+            if (context.Request.Headers.TryGetValue("datastar-request", out _)) 
+            {
+                return TypedResults.Ok();
+            }
+
+            // context.Response.Redirect("/contacts");
+            // return Task.CompletedTask;
+
+            await dataStar.StartServerEventStreamAsync();
         });
 
         app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query,
@@ -59,8 +70,8 @@ public partial class Program
 
         app.MapGet("/contact/{id:int}", async (int id, TemplateRegistry registry, WebOneDbContext context, IDatastarService dataStar) =>
         {
-            // var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
-            Contact? contact = null;
+            var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
+            // Contact? contact = null;
             // contact.ThrowIfNull("Contact was in list but entry doesn't exist.");
             if (contact is null)
             {

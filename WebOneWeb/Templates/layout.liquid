@@ -1,3 +1,34 @@
+
+{% capture ContactTemplate %}
+    <tr id="{{ contact.Id }}"
+        data-on:click="@get('/contact/{{ contact.Id }}')")>
+        <th>
+            <img src="/images/user.svg" width="50" height="50">
+        </th>
+        <th>
+            <div id="contactDescription" class="contact-description">
+                {{ contact.Name | append: " - " | append: contact.Email }}
+            </div>
+        </th>
+    </tr>
+{%  endcapture %}
+
+{% capture Body %}
+<div>
+    Waiting for messages...
+</div>
+
+<div id="workingContainer" class="container-fluid overflow-auto">
+    <table>
+        <tbody>
+            {% for contact in Contacts %}
+                
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endcapture %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
