@@ -10,7 +10,7 @@ namespace WebOneWeb;
 
 public partial class Program
 {
-    private Channel<string> events = Channel.CreateUnbounded<string>();
+    private static Channel<KeyValuePair<string, string>> Events = Channel.CreateUnbounded<KeyValuePair<string, string>>();
     
     private static void Main(string[] args)
     {
@@ -27,19 +27,7 @@ public partial class Program
 
         app.MapStaticAssets();
         app.UseExceptionHandler();
-        app.MapGet("/", async (HttpContext context, TemplateRegistry registry, 
-                               WebOneDbContext dbContext, IDatastarService dataStar) =>
-        {
-            if (context.Request.Headers.TryGetValue("datastar-request", out _)) 
-            {
-                return TypedResults.Ok();
-            }
-
-            // context.Response.Redirect("/contacts");
-            // return Task.CompletedTask;
-
-            await dataStar.StartServerEventStreamAsync();
-        });
+        app.MapGet("/", (HttpContext context) => context.Response.Redirect("/contacts"));
 
         app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query,
            TemplateRegistry registry,
@@ -66,20 +54,6 @@ public partial class Program
 
             var html = await registry.RenderTemplateAsync("contacts.liquid", new { Contacts = contacts });
             return Results.Content(html, "text/html");
-        });
-
-        app.MapGet("/contact/{id:int}", async (int id, TemplateRegistry registry, WebOneDbContext context, IDatastarService dataStar) =>
-        {
-            var contact = context.Contacts.FirstOrDefault(c => c.Id == id);
-            // Contact? contact = null;
-            // contact.ThrowIfNull("Contact was in list but entry doesn't exist.");
-            if (contact is null)
-            {
-                throw new Exception("Test");
-            }
-            var html = await registry.RenderTemplateAsync("contact.liquid", new { Contact = contact });
-
-            await dataStar.PatchElementsAsync(html);
         });
 
         app.Run();

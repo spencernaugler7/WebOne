@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- meta -->
+    <meta charset="UTF-8" />
+    <title>Hello, world!</title>
+    <meta name="color-scheme" content="light dark">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/custom-styles.css">
+    <link rel="stylesheet" href="/lib/pico/pico.min.css">
+
+    <!-- scripts -->
+    <script type="module" src="/js/datastar.min.js"></script>
+  </head>
+  <body>
+    <pre data-json-signals></pre>
+    <input id="testInput" data-bind:testInput type="datetime-local" value=""></button>
+    <div style="display: flex; flex-direction: row; gap: 10px">
+      <button 
+        id="testButton" 
+        data-on:click="$testinput = Temporal.Now.plainDateTimeISO().toString('YYYY-MM-DDTHH:mm')"
+      >Reset Date To Today</button>
+      <button 
+        id="testButton2" 
+        data-on:click="$testinput = null"
+      >Clear Date Input</button>
+      <button 
+        id="testButton3" 
+        data-on:click="$testinput && $testinput = (new Date(Date.now())).toISOString().slice(0,16)"
+      >Add One day to input</button>
+    </div>
+    <main id="main" class="container-fluid overflow-auto">
+      {% if Body %}
+        {{ Body }}
+      {% else %}
+        <h1>Nothing</h1>
+      {% endif %}
+    </main>
+  </body>
+</html>
