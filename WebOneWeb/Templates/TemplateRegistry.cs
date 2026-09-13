@@ -7,15 +7,14 @@ namespace WebOneWeb.Templates;
 
 public static class TemplateRegistryExtensions
 {
-    public static IServiceCollection AddTemplateRegistry(this IServiceCollection services)
+    public static void AddTemplateRegistry(this IServiceCollection services)
     {
         services.AddSingleton<FluidParser>();
         services.AddSingleton<IFileProvider>(_ =>
         {
             var currentDir = Directory.GetCurrentDirectory();
             var dir = Path.Combine(currentDir, "Templates");
-            var provider = new PhysicalFileProvider(dir, ExclusionFilters.None); // seems brittle, what if we have templates in subdirectories?
-            provider.Watch("*.*");
+            var provider = new PhysicalFileProvider(dir, ExclusionFilters.None); // TODO: load templates in subdirectories isn't working. How do I do this?
             return provider;
         });
 
@@ -31,8 +30,6 @@ public static class TemplateRegistryExtensions
         });
 
         services.AddSingleton<TemplateRegistry>();
-
-        return services;
     }
 }
 

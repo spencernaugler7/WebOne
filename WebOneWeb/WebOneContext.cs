@@ -11,7 +11,7 @@ public class WebOneDbContext(DbContextOptions<WebOneDbContext> options) : DbCont
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var dbConnString = Environment.GetEnvironmentVariable("WEBONE_DB_CONNECTION_STRING");
-        dbConnString.ThrowIfNull("WEBONE_DB_CONNECTION_STRING must be defined in the enviornment").IfEmpty();
+        dbConnString.ThrowIfNull("WEBONE_DB_CONNECTION_STRING must be defined in the environment").IfEmpty();
         optionsBuilder.UseNpgsql(dbConnString);
     }
 

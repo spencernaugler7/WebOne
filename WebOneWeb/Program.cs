@@ -8,7 +8,7 @@ using WebOneWeb.Templates;
 
 namespace WebOneWeb;
 
-public partial class Program
+public static class Program
 {
     private static Channel<KeyValuePair<string, string>> Events = Channel.CreateUnbounded<KeyValuePair<string, string>>();
     
