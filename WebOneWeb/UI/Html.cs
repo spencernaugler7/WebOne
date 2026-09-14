@@ -7,57 +7,54 @@ namespace WebOneWeb.UI;
 
 public static class Html
 {
-    public static string Layout(IHtmlContent? body)
+    public static string Ui(List<Contact> contacts) 
     {
-        var builder = FluentHtml.HtmlTag(html =>
-        {
-            html.Head(head =>
-            {
-                head.Meta(m => m.Attr("charset", "UTF-8"));
-                head.Meta(m => m.Attr("charset", "UTF-8"));
-                head.Title(t => t.Text("Hello World"));
-            });
-            html.Pre(p => p.Attr("data-json-signals", null));
-            html.Body(b =>
-            {
-                b.Attr("class", "container-fluid");
-                b.Add(body);
-            });
-        });
-
-        return builder.ToHtmlString();
+        var html = Layout(Body(contacts));
+        return html?.ToHtmlString() ?? string.Empty;
     }
 
-    public static IHtmlContent? Body(List<Contact> contacts)
+    private static IHtmlContent? Layout(IHtmlContent? body) => FluentHtml.HtmlTag(html =>
     {
-        var builder = FluentHtml.Div(div =>
+        html.Head(head =>
         {
-            div.Id("workingContainer");
-            div.Class("container-fluid", "overflow-auto");
-            div.Data("theme", "dark");
+            head.Meta(m => m.Attr("charset", "UTF-8"));
+            head.Meta(m => m.Attr("charset", "UTF-8"));
+            head.Title(t => t.Text("Hello World"));
+        });
+        html.Pre(p => p.Attr("data-json-signals", null));
+        html.Body(b =>
+        {
+            b.Attr("class", "container-fluid");
+            b.Add(body);
+        });
+    });
 
-            div.Table(t => t.TableBody(tbody =>
+    private static IHtmlContent? Body(List<Contact> contacts) => FluentHtml.Div(div =>
+    {
+        div.Id("workingContainer");
+        div.Class("container-fluid", "overflow-auto");
+        div.Data("theme", "dark");
+
+        div.Table(t => t.TableBody(tbody =>
+        {
+            foreach (var contact in contacts)
             {
-                foreach (var contact in contacts)
+                tbody.TableRow(row =>
                 {
-                    tbody.TableRow(row =>
-                    {
-                        row.Id(contact.Id.ToString());
-                        row.Data("on-click", $"@get('/contact/{contact.Id})");
+                    row.Id(contact.Id.ToString());
+                    row.Data("on-click", $"@get('/contact/{contact.Id})");
 
-                        row.TableHead(head => head.Img(img => img.Attrs("src", "/images/usr.svg", "width", "50", "height", "50")));
-                        row.TableHead(head =>
-                        {
-                            head.Id("contactDescription");
-                            head.Class("contact-description");
-                            head.Text($"{contact.Name} - {contact.Email}");
-                        });
+                    row.TableHead(head => head.Img(img => img.Attrs("src", "/images/usr.svg", "width", "50", "height", "50")));
+                    row.TableHead(head =>
+                    {
+                        head.Id("contactDescription");
+                        head.Class("contact-description");
+                        head.Text($"{contact.Name} - {contact.Email}");
                     });
-                }
-            }));
-        });
-        return builder;
-    }
+                });
+            }
+        }));            
+    });
 }
 
 
