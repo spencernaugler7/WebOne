@@ -13,6 +13,21 @@ public class WebOneDbContext(DbContextOptions<WebOneDbContext> options) : DbCont
         var dbConnString = Environment.GetEnvironmentVariable("WEBONE_DB_CONNECTION_STRING");
         dbConnString.ThrowIfNull("WEBONE_DB_CONNECTION_STRING must be defined in the environment").IfEmpty();
         optionsBuilder.UseNpgsql(dbConnString);
+
+        optionsBuilder.UseAsyncSeeding(async (context, _, token) => 
+        {
+            var firstContact = await context.Set<Contact>().FirstOrDefaultAsync(token);
+            if (firstContact is null) 
+            {
+                var defaultContact = new Contact {
+                    Id = 1,
+                    Name = "Spencer",
+                    Email = "spencernaugler7@gmail.com"
+                };
+                await context.AddAsync(defaultContact, token);
+                await context.SaveChangesAsync(token);
+            }
+        });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
