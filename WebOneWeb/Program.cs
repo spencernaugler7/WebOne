@@ -1,10 +1,13 @@
 using System.Threading.Channels;
 using DotNetEnv;
+using Heimdall.Server.Rendering;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using StarFederation.Datastar.DependencyInjection;
 using Throw;
 using WebOneCore;
 using WebOneWeb.Templates;
+using WebOneWeb.UI;
 
 namespace WebOneWeb;
 
@@ -29,31 +32,31 @@ public static class Program
         app.UseExceptionHandler();
         app.MapGet("/", (HttpContext context) => context.Response.Redirect("/contacts"));
 
+
         app.MapGet("/contacts", async ([FromQuery(Name = "q")] string? query,
            TemplateRegistry registry,
            WebOneDbContext context) =>
         {
             if (!await context.Database.CanConnectAsync())
             {
-                const string errorMessage = "Database is not connected, Ensure database is running and reconnect.";
-                var exceptionTemplate = await registry.RenderTemplateAsync("exception.liquid", new { Message = errorMessage });
-                var homePage = await registry.RenderTemplateAsync("layout.liquid", new { Body = exceptionTemplate });
-                return Results.Content(homePage, "text/html");
+                var exceptionTemplate = Error.ErrorPage(true, "/contacts", "Database is not connected, Ensure database is running and reconnect.");
+                var errorHtml = UiBuilders.Layout(exceptionTemplate);
+                return Results.Content(errorHtml?.ToHtmlString(), "text/html");
             }
 
             if (string.IsNullOrEmpty(query))
             {
-                var contactsAll = context.Contacts.ToList();
-                var emptyContacts = await registry.RenderTemplateAsync("contacts.liquid", new { Contacts = contactsAll });
-                return Results.Content(emptyContacts, "text/html");
+                List<Contact> contactsAll = context.Contacts.ToList();
+                IHtmlContent? fullContacts = UiBuilders.Layout(UiBuilders.Body(contactsAll));
+                return Results.Content(fullContacts.ToHtmlString(), "text/html");
             }
 
             List<Contact> contacts = context.Contacts
                 .Where(c => !string.IsNullOrEmpty(c.Name) || query.Trim().Contains(c.Name.ToUpper().Trim(), StringComparison.CurrentCultureIgnoreCase))
                 .ToList();
 
-            var html = await registry.RenderTemplateAsync("contacts.liquid", new { Contacts = contacts });
-            return Results.Content(html, "text/html");
+            var html = UiBuilders.Layout(UiBuilders.Body(contacts));
+            return Results.Content(html.ToHtmlString(), "text/html");
         });
 
         app.Run();

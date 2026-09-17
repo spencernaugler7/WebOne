@@ -2,8 +2,7 @@
     <table>
         <tbody>
             {% for contact in Contacts %}
-                <tr id="{{ contact.Id }}"
-                    data-on:click="@get('/contact/{{ contact.Id }}')")>
+                <tr id="{{ contact.Id }}" data-on:click="@get('/contact/{{ contact.Id }}')")>
                     <th>
                         <img src="/images/user.svg" width="50" height="50">
                     </th>
