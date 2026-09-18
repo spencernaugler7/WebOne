@@ -46,61 +46,12 @@ public static class UiBuilders
         trow.Id(contact.Id.ToString());
         trow.Data("on-click", $"@get('/contact/{contact.Id})");
 
-        trow.TableHead(head => head.Img(img => img.Attrs("src", "/images/usr.svg", "width", "50", "height", "50")));
-        trow.TableHead(head => head.Div(d =>
+        trow.TableDataCell(cell => cell.Img(img => img.Attrs("src", "/images/usr.svg", "width", "50", "height", "50")));
+        trow.TableDataCell(cell => cell.Div(div =>
         {
-            d.Id("contactDescription");
-            d.Class("contact-description");
-            d.Text($"{contact.Name} - {contact.Email}");
+            div.Id("contactDescription");
+            div.Class("contact-description");
+            div.Text($"{contact.Name} - {contact.Email}");
         }));
     });
-}
-
-public static class HtmlExtensions
-{
-    public static ElementBuilder Attrs(this ElementBuilder builder, params string[] attrs)
-    {
-        if (attrs.Length % 2 != 0)
-            throw new ArgumentException("Attrs must be provided an even number of key/values");
-
-        foreach (var keyval in attrs.Chunk(2))
-        {
-            builder.Attr(keyval[0], keyval[^1]);
-        }
-
-        return builder;
-    }
-
-    public static ElementBuilder ForEach<T>(this ElementBuilder builder, 
-        IEnumerable<T> collection, 
-        Action<ElementBuilder, T> individualElementBuilder)  
-    {
-        foreach(var item in collection) 
-        {
-            individualElementBuilder(builder, item);
-        }
-        return builder;
-    }
-
-    public static async Task<ElementBuilder> ForEachAsync<T>(this ElementBuilder builder, 
-        IAsyncEnumerable<T> collection, 
-        Func<ElementBuilder, T, Task> individualElementBuilder)  
-    {
-        await foreach(var item in collection) 
-        {
-            await individualElementBuilder(builder, item);
-        }
-        return builder;
-    }
-
-    public static async Task<ElementBuilder> ForEachAsync<T>(this ElementBuilder builder, 
-        IEnumerable<T> collection, 
-        Func<ElementBuilder, T, Task> individualElementBuilder)  
-    {
-        foreach(var item in collection) 
-        {
-            await individualElementBuilder(builder, item);
-        }
-        return builder;
-    }
 }
