@@ -8,7 +8,7 @@
             "name": "C#: WebOne Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/WebOne.csproj"
+            "projectPath": "${workspaceFolder}/WebOneWeb/WebOneWeb.csproj"
         }
 
     ]
